@@ -1,0 +1,427 @@
+{
+  "info": {
+    "_postman_id": "tag-classifier-api",
+    "name": "Tag Classifier API",
+    "description": "API Collection für Tag Classifier - Klassifiziert Bildertags in Kategorien mittels Zero-Shot Classification",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8766",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": ["{{baseUrl}}"],
+          "path": [""]
+        },
+        "description": "Health Check Endpunkt - Gibt den Status des Services und Informationen zum geladenen Modell zurück.\n\n**Response:**\n- status: Service-Status (healthy/unhealthy)\n- model: Name des verwendeten Modells\n- timestamp: Aktueller Zeitstempel\n- version: API Version"
+      },
+      "response": [
+        {
+          "name": "Successful Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": \"healthy\",\n  \"model\": \"MoritzLaurer/deberta-v3-base-zeroshot-v2.0\",\n  \"timestamp\": \"2026-01-24T10:30:00.123456\",\n  \"version\": \"1.0.0\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "API Information",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/info",
+          "host": ["{{baseUrl}}"],
+          "path": ["info"]
+        },
+        "description": "Gibt detaillierte Informationen über die API zurück.\n\n**Response:**\n- name: API Name\n- version: API Version\n- model: Verwendetes Modell\n- endpoints: Verfügbare Endpunkte"
+      },
+      "response": [
+        {
+          "name": "Successful Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["info"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"name\": \"Tag Classifier API\",\n  \"version\": \"1.0.0\",\n  \"model\": \"MoritzLaurer/deberta-v3-base-zeroshot-v2.0\",\n  \"endpoints\": {\n    \"/\": \"Health Check\",\n    \"/classify\": \"Tag Classification (POST)\",\n    \"/info\": \"API Information\",\n    \"/docs\": \"Swagger UI Dokumentation\",\n    \"/redoc\": \"ReDoc Dokumentation\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Classify Tags - Animals",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tags\": [\"dog\", \"park\", \"outdoor\", \"playing\", \"sunny\"],\n  \"categories\": [\"animals\", \"landscape\", \"portrait\", \"architecture\", \"food\", \"sports\"],\n  \"multi_label\": false,\n  \"return_scores\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/classify",
+          "host": ["{{baseUrl}}"],
+          "path": ["classify"]
+        },
+        "description": "Beispiel: Klassifizierung von Tier-Tags\n\n**Request Body:**\n- tags: Liste von Bildertags\n- categories: Liste möglicher Kategorien (min. 2)\n- multi_label: Boolean, ob mehrere Kategorien zutreffen können (optional, default: false)\n- return_scores: Boolean, ob alle Scores zurückgegeben werden (optional, default: false)"
+      },
+      "response": [
+        {
+          "name": "Successful Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tags\": [\"dog\", \"park\", \"outdoor\", \"playing\", \"sunny\"],\n  \"categories\": [\"animals\", \"landscape\", \"portrait\", \"architecture\", \"food\", \"sports\"],\n  \"multi_label\": false,\n  \"return_scores\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/classify",
+              "host": ["{{baseUrl}}"],
+              "path": ["classify"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"category\": \"animals\",\n  \"score\": 0.92,\n  \"all_scores\": null\n}"
+        }
+      ]
+    },
+    {
+      "name": "Classify Tags - Landscape (with scores)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tags\": [\"sunset\", \"mountains\", \"hiking\", \"nature\", \"outdoor\"],\n  \"categories\": [\"animals\", \"landscape\", \"portrait\", \"architecture\", \"food\", \"sports\"],\n  \"multi_label\": false,\n  \"return_scores\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/classify",
+          "host": ["{{baseUrl}}"],
+          "path": ["classify"]
+        },
+        "description": "Beispiel: Landschafts-Tags mit allen Scores\n\nMit return_scores=true werden alle Kategorie-Scores zurückgegeben."
+      },
+      "response": [
+        {
+          "name": "Successful Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tags\": [\"sunset\", \"mountains\", \"hiking\", \"nature\", \"outdoor\"],\n  \"categories\": [\"animals\", \"landscape\", \"portrait\", \"architecture\", \"food\", \"sports\"],\n  \"multi_label\": false,\n  \"return_scores\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/classify",
+              "host": ["{{baseUrl}}"],
+              "path": ["classify"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"category\": \"landscape\",\n  \"score\": 0.89,\n  \"all_scores\": {\n    \"landscape\": 0.89,\n    \"sports\": 0.08,\n    \"animals\": 0.01,\n    \"architecture\": 0.01,\n    \"portrait\": 0.01,\n    \"food\": 0.00\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Classify Tags - Portrait",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tags\": [\"woman\", \"smiling\", \"close-up\", \"face\", \"happy\"],\n  \"categories\": [\"animals\", \"landscape\", \"portrait\", \"architecture\", \"food\", \"sports\"],\n  \"multi_label\": false,\n  \"return_scores\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/classify",
+          "host": ["{{baseUrl}}"],
+          "path": ["classify"]
+        },
+        "description": "Beispiel: Portrait-Tags"
+      },
+      "response": []
+    },
+    {
+      "name": "Classify Tags - Food",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tags\": [\"pizza\", \"cheese\", \"restaurant\", \"delicious\", \"italian\"],\n  \"categories\": [\"animals\", \"landscape\", \"portrait\", \"architecture\", \"food\", \"sports\"],\n  \"multi_label\": false,\n  \"return_scores\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/classify",
+          "host": ["{{baseUrl}}"],
+          "path": ["classify"]
+        },
+        "description": "Beispiel: Food-Tags"
+      },
+      "response": []
+    },
+    {
+      "name": "Classify Tags - German Tags",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tags\": [\"Hund\", \"Park\", \"spielend\", \"draußen\"],\n  \"categories\": [\"Tiere\", \"Landschaft\", \"Portrait\", \"Architektur\", \"Essen\"],\n  \"multi_label\": false,\n  \"return_scores\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/classify",
+          "host": ["{{baseUrl}}"],
+          "path": ["classify"]
+        },
+        "description": "Beispiel: Mehrsprachige Tags (Deutsch)\n\nDas Modell funktioniert mit verschiedenen Sprachen."
+      },
+      "response": []
+    },
+    {
+      "name": "Classify Tags - Single Tag",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tags\": [\"sunset\"],\n  \"categories\": [\"animals\", \"landscape\", \"portrait\", \"architecture\"],\n  \"multi_label\": false,\n  \"return_scores\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/classify",
+          "host": ["{{baseUrl}}"],
+          "path": ["classify"]
+        },
+        "description": "Beispiel: Einzelner Tag\n\nAuch einzelne Tags können klassifiziert werden."
+      },
+      "response": []
+    },
+    {
+      "name": "Classify Tags - Custom Categories",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tags\": [\"car\", \"red\", \"sports car\", \"garage\", \"expensive\"],\n  \"categories\": [\"product photography\", \"real estate\", \"events and celebrations\", \"nature and wildlife\", \"automotive\"],\n  \"multi_label\": false,\n  \"return_scores\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/classify",
+          "host": ["{{baseUrl}}"],
+          "path": ["classify"]
+        },
+        "description": "Beispiel: Benutzerdefinierte Kategorien\n\nEs können beliebige Kategorien verwendet werden."
+      },
+      "response": []
+    },
+    {
+      "name": "Error - Empty Tags",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tags\": [],\n  \"categories\": [\"animals\", \"landscape\", \"portrait\"],\n  \"multi_label\": false,\n  \"return_scores\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/classify",
+          "host": ["{{baseUrl}}"],
+          "path": ["classify"]
+        },
+        "description": "Fehlerbehandlung: Leere Tags-Liste\n\nErwartet: 400 Bad Request"
+      },
+      "response": [
+        {
+          "name": "Error Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tags\": [],\n  \"categories\": [\"animals\", \"landscape\", \"portrait\"],\n  \"multi_label\": false,\n  \"return_scores\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/classify",
+              "host": ["{{baseUrl}}"],
+              "path": ["classify"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"detail\": \"Mindestens ein Tag muss angegeben werden\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Error - Too Few Categories",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tags\": [\"dog\", \"park\"],\n  \"categories\": [\"animals\"],\n  \"multi_label\": false,\n  \"return_scores\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/classify",
+          "host": ["{{baseUrl}}"],
+          "path": ["classify"]
+        },
+        "description": "Fehlerbehandlung: Zu wenige Kategorien\n\nErwartet: 400 Bad Request\nMindestens 2 Kategorien sind erforderlich."
+      },
+      "response": [
+        {
+          "name": "Error Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tags\": [\"dog\", \"park\"],\n  \"categories\": [\"animals\"],\n  \"multi_label\": false,\n  \"return_scores\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/classify",
+              "host": ["{{baseUrl}}"],
+              "path": ["classify"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"detail\": \"Mindestens zwei Kategorien müssen angegeben werden\"\n}"
+        }
+      ]
+    }
+  ]
+}
