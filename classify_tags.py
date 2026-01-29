@@ -8,6 +8,7 @@ um eine Liste von Bildertags der wahrscheinlichsten Kategorie zuzuordnen.
 from transformers import pipeline
 from typing import List, Dict, Optional
 import warnings
+import torch
 
 warnings.filterwarnings("ignore")
 
@@ -23,12 +24,21 @@ class TagClassifier:
             model_name: Name des Hugging Face Modells für Zero-Shot Classification
         """
         print(f"Lade Modell: {model_name}...")
+        # Automatische Device-Auswahl: GPU wenn verfügbar, sonst CPU
+        device = 0 if torch.cuda.is_available() else -1
         self.classifier = pipeline(
             "zero-shot-classification",
             model=model_name,
-            device=-1  # CPU verwenden, für GPU: device=0
+            device=device
         )
         print("Modell erfolgreich geladen!")
+        
+        # Ausgabe des verwendeten Devices
+        device_info = self.classifier.model.device
+        if device_info.type == 'cuda':
+            print(f"Modell läuft auf GPU (Device: {device_info})")
+        else:
+            print(f"Modell läuft auf CPU (Device: {device_info})")
     
     def classify_tags(
         self,
